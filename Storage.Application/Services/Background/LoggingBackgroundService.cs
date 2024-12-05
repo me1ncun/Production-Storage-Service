@@ -18,11 +18,27 @@ public class LoggingBackgroundService : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
+            await ProccessContractsAsync();
+
             await Task.Delay(20000, stoppingToken);
-            
-            _logger.LogInformation("LoggingBackgroundService: Background task executed at {Time}", DateTimeOffset.Now);
         }
 
         _logger.LogInformation("Logging background ended.");
+    }
+
+    private async Task ProccessContractsAsync()
+    {
+        await Task.Run(() =>
+        {
+            if (FakeQueue.Contracts.Count() > 0)
+            {
+                foreach (var contract in FakeQueue.Contracts.ToList())
+                {
+                    _logger.LogInformation($"Proccessing contract {contract.Id}\n");
+
+                    FakeQueue.Dequeue();
+                }
+            }
+        });
     }
 }
