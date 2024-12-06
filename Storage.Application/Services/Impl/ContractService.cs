@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Storage.Application.Exceptions;
 using Storage.Application.Models;
+using Storage.Application.Services.Background;
 using Storage.Core.Enitities;
 using Storage.DataAccess.Repositories;
 
@@ -28,15 +29,15 @@ public class ContractService : IContractService
         _productionFacilityRepository = productionFacilityRepository;
         _equipmentRepository = equipmentRepository;
     }
-    
+
     public async Task<IEnumerable<ContractResponseModel>> GetAllAsync()
     {
         var contracts = await _contractRepository.GetAllAsync();
-        
+
         var result = _mapper.Map<IEnumerable<ContractResponseModel>>(contracts);
-        
+
         _logger.LogInformation("Contracts list retrieved successfully");
-        
+
         return result;
     }
 
@@ -48,9 +49,9 @@ public class ContractService : IContractService
             _logger.LogError("Production facility with Code {Code} not found", createContractModel.FacilityCode);
             throw new EntityNotFoundException("Production facility not found");
         }
-        
-        var usedArea  = await _contractRepository.CalculateUsedAreaAsync(facility.Code);
-        
+
+        var usedArea = await _contractRepository.CalculateUsedAreaAsync(facility.Code);
+
         var equipment = await _equipmentRepository.GetByIdAsync(createContractModel.EquipmentCode);
         if (equipment is null)
         {
@@ -64,18 +65,13 @@ public class ContractService : IContractService
             _logger.LogWarning("Insufficient space for equipment in facility {FacilityCode}", facility.Code);
             throw new InsufficientSpaceException();
         }
-        
+
         var contract = _mapper.Map<Contract>(createContractModel);
         await _contractRepository.AddAsync(contract);
-        
+
         _logger.LogInformation("Created contract successfully");
-        
+
         // Asynchronous background task
-        _ = Task.Run(async () =>
-        {
-            await Task.Delay(1000); 
-            
-            _logger.LogInformation("Background task executed for contract: {ContractId}", contract.Id);
-        });
+        FakeQueue.Add(contract);
     }
 }
