@@ -9,11 +9,11 @@ public class ContractModelValidator : AbstractValidator<CreateContractModel>
         RuleFor(x => x.EquipmentCode)
             .NotEmpty()
             .WithMessage("Process equipment code is required");
-        
+
         RuleFor(x => x.FacilityCode)
             .NotEmpty()
             .WithMessage("Production facility code is required");
-        
+
         RuleFor(x => x.EquipmentQuantity)
             .NotEmpty()
             .GreaterThan(0)

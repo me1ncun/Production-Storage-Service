@@ -1,6 +1,6 @@
-﻿using Equipment_Storage_Service.Attributes;
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Storage.Application.Exceptions;
 using Storage.Application.Models;
@@ -9,7 +9,8 @@ using Storage.Application.Services;
 namespace Equipment_Storage_Service.Controllers;
 
 [ApiController]
-[Route("/api/v1")]
+[Route("/api/v1/")]
+[Authorize]
 public class ContractController : ControllerBase
 {
     private readonly IContractService _contractService;
@@ -22,9 +23,8 @@ public class ContractController : ControllerBase
         _contractService = contractService;
         _validator = validator;
     }
-    
-    [HttpGet("/contracts")]
-    [KeyRequired]
+
+    [HttpGet("contracts")]
     [ProducesResponseType(type: typeof(IEnumerable<ContractResponseModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllContracts()
@@ -40,9 +40,8 @@ public class ContractController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
-    
-    [HttpPost("/contracts")]
-    [KeyRequired]
+
+    [HttpPost("contracts")]
     [ProducesResponseType(type: typeof(IEnumerable<ContractResponseModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(type: typeof(List<ValidationFailure>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -71,7 +70,7 @@ public class ContractController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);;
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
 }
