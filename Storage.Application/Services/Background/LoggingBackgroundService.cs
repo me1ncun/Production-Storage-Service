@@ -1,24 +1,29 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Storage.Application.Services.Background.Interfaces;
 
 namespace Storage.Application.Services.Background;
 
 public class LoggingBackgroundService : BackgroundService
 {
     private readonly ILogger<LoggingBackgroundService> _logger;
+    private readonly ILoggingQueue _loggingQueue;
 
-    public LoggingBackgroundService(ILogger<LoggingBackgroundService> logger)
+    public LoggingBackgroundService(
+        ILogger<LoggingBackgroundService> logger,
+        ILoggingQueue loggingQueue)
     {
         _logger = logger;
+        _loggingQueue = loggingQueue;
     }
-
+    
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("Logging background started.");
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            await ProccessContractsAsync();
+            await ProccessContractsAsync(stoppingToken);
 
             await Task.Delay(20000, stoppingToken);
         }
@@ -26,19 +31,13 @@ public class LoggingBackgroundService : BackgroundService
         _logger.LogInformation("Logging background ended.");
     }
 
-    private async Task ProccessContractsAsync()
+    private async Task ProccessContractsAsync(CancellationToken stoppingToken)
     {
-        await Task.Run(() =>
+        while (_loggingQueue.TryDequeue(out var contract))
         {
-            if (FakeQueue.Contracts.Count() > 0)
-            {
-                foreach (var contract in FakeQueue.Contracts.ToList())
-                {
-                    _logger.LogInformation($"Proccessing contract {contract.Id}\n");
-
-                    FakeQueue.Dequeue();
-                }
-            }
-        });
+            _logger.LogInformation($"Processing contract {contract.Id}");
+            
+            await Task.Delay(100, stoppingToken);
+        }
     }
 }
