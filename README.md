@@ -25,7 +25,7 @@ This service is designed for managing the leasing of areas in production facilit
 
 ### Remotely
 
-https://storage-service-fcezg3hmapfvaffm.canadacentral-01.azurewebsites.net/index.html
+https://storage-service-fcezg3hmapfvaffm.canadacentral-01.azurewebsites.net/swagger/index.html
 
 ### Locally
 
