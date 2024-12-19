@@ -43,7 +43,7 @@ public static class DbInitializer
                     Name = "Central Facility",
                     StandartArea = 230
                 });
-            
+
             context.SaveChanges();
         }
     }

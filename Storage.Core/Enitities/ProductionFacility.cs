@@ -7,4 +7,3 @@ public class ProductionFacility
     public float StandartArea { get; set; }
     public ICollection<Contract> Contracts { get; set; }
 }
-    

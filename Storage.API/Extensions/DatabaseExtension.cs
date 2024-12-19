@@ -11,9 +11,9 @@ public static class DatabaseExtension
         {
             var services = scope.ServiceProvider;
             var context = services.GetRequiredService<DatabaseContext>();
-        
+
             context.Database.EnsureCreated();
-        
+
             DbInitializer.Initialize(context);
         }
     }

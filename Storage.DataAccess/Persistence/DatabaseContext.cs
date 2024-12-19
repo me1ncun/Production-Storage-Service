@@ -15,7 +15,7 @@ public class DatabaseContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
-    
+
     public DbSet<Contract> Contracts { get; set; }
     public DbSet<Equipment> Equipments { get; set; }
     public DbSet<ProductionFacility> ProductionFacilities { get; set; }

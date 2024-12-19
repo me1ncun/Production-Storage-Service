@@ -22,16 +22,17 @@ public class ContractControllerTests
         _controller = new ContractController(
             _contractServiceMock.Object,
             _createContractValidatorMock.Object
-            );
+        );
     }
-    
+
     [Fact]
     public async Task GetAllContracts_ReturnsOkResultWithContracts()
     {
         // Arrange
         var contracts = new List<ContractResponseModel>
         {
-            new ContractResponseModel { Id = 1, FacilityName = "Tech Park", EquipmentName = "3D Printer", EquipmentQuantity = 3 }
+            new ContractResponseModel
+                { Id = 1, FacilityName = "Tech Park", EquipmentName = "3D Printer", EquipmentQuantity = 3 }
         };
         _contractServiceMock.Setup(s => s.GetAllAsync()).ReturnsAsync(contracts);
 
@@ -42,7 +43,7 @@ public class ContractControllerTests
         var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.Equal(contracts, okResult.Value);
     }
-    
+
     [Fact]
     public async Task GetAllContracts_Exception_ReturnsInternalServerError()
     {
@@ -54,7 +55,7 @@ public class ContractControllerTests
         var result = await _controller.GetAllContracts();
 
         // Assert
-        var internalServerErrorResult  = Assert.IsType<ObjectResult>(result);
+        var internalServerErrorResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(500, internalServerErrorResult.StatusCode);
         Assert.Equal("Server error", internalServerErrorResult.Value);
     }
@@ -64,8 +65,7 @@ public class ContractControllerTests
     {
         // Arrange
         var contractModel = new CreateContractModel()
-        {
-            Id = 1,
+        { 
             EquipmentCode = 1,
             FacilityCode = 2,
             EquipmentQuantity = 2
@@ -75,19 +75,18 @@ public class ContractControllerTests
 
         // Act
         var result = await _controller.AddContract(contractModel);
-        
+
         // Assert
         var okResult = Assert.IsType<OkResult>(result);
         Assert.Equal(200, okResult.StatusCode);
     }
-    
+
     [Fact]
     public async Task AddContract_InvalidModel_ReturnsBadRequestResult()
     {
         // Arrange
         var contractModel = new CreateContractModel()
         {
-            Id = 1,
             EquipmentCode = 1,
             FacilityCode = 2,
             EquipmentQuantity = 2
@@ -96,24 +95,24 @@ public class ContractControllerTests
         {
             new ValidationFailure("Field", "Validation error")
         };
-        _createContractValidatorMock.Setup(v => v.Validate(contractModel)).Returns(new ValidationResult(validationFailures));
+        _createContractValidatorMock.Setup(v => v.Validate(contractModel))
+            .Returns(new ValidationResult(validationFailures));
 
         // Act
         var result = await _controller.AddContract(contractModel);
-        
+
         // Assert
         var badResultRequest = Assert.IsType<ObjectResult>(result);
         Assert.Equal(400, badResultRequest.StatusCode);
         Assert.NotNull(badResultRequest.Value);
     }
-    
+
     [Fact]
     public async Task AddContract_EntityNotFoundException_ReturnsNotFound()
     {
         // Arrange
         var contractModel = new CreateContractModel()
         {
-            Id = 1,
             EquipmentCode = 1,
             FacilityCode = 2,
             EquipmentQuantity = 2
@@ -124,20 +123,19 @@ public class ContractControllerTests
 
         // Act
         var result = await _controller.AddContract(contractModel);
-        
+
         // Assert
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
         Assert.Equal(404, notFoundResult.StatusCode);
         Assert.Equal("Entity not found", notFoundResult.Value);
     }
-    
+
     [Fact]
     public async Task AddContract_InsufficientSpaceException_ReturnsBadRequest()
     {
         // Arrange
         var contractModel = new CreateContractModel()
         {
-            Id = 1,
             EquipmentCode = 1,
             FacilityCode = 2,
             EquipmentQuantity = 2
@@ -148,20 +146,19 @@ public class ContractControllerTests
 
         // Act
         var result = await _controller.AddContract(contractModel);
-        
+
         // Assert
         var badResultRequest = Assert.IsType<ObjectResult>(result);
         Assert.Equal(400, badResultRequest.StatusCode);
         Assert.Equal("Insufficient space", badResultRequest.Value);
     }
-    
+
     [Fact]
     public async Task AddContract_Exception_ReturnsInternalServerError()
     {
         // Arrange
         var contractModel = new CreateContractModel()
         {
-            Id = 1,
             EquipmentCode = 1,
             FacilityCode = 2,
             EquipmentQuantity = 2
@@ -172,9 +169,9 @@ public class ContractControllerTests
 
         // Act
         var result = await _controller.AddContract(contractModel);
-        
+
         // Assert
-        var internalServerErrorResult  = Assert.IsType<ObjectResult>(result);
+        var internalServerErrorResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(500, internalServerErrorResult.StatusCode);
         Assert.Equal("Server error", internalServerErrorResult.Value);
     }

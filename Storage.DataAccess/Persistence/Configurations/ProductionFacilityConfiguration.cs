@@ -9,14 +9,14 @@ public class ProductionFacilityConfiguration : IEntityTypeConfiguration<Producti
     public void Configure(EntityTypeBuilder<ProductionFacility> builder)
     {
         builder.ToTable("ProductionFacility");
-        
+
         builder.HasKey(e => e.Code);
 
         builder.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(100);
+            .IsRequired()
+            .HasMaxLength(100);
 
         builder.Property(e => e.StandartArea)
-                .IsRequired();
+            .IsRequired();
     }
 }
